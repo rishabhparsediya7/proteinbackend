@@ -9,8 +9,8 @@ const UserSchema = new mongoose.Schema({
   password: {
     type: String,
     required: false,
-  },
-  orders: { type: Object, required: false },
+  },  
+  orders: [{ type: Object, required: false }],
 });
 
 module.exports = mongoose.model("Protein_User", UserSchema);

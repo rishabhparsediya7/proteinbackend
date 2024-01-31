@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const upload = multer({ storage: multer.memoryStorage() });
 const authRoute = require("./Routes/AuthRoute");
 const userRoutes = require("./Routes/UserRoute");
+const orderRoute = require("./Routes/OrderRoute");
 const productRoute = require("./Routes/ProductRoutes");
 const paymentRoutes = require("./Routes/PaymentRoute");
 require("dotenv").config();
@@ -34,6 +35,8 @@ app.use((req, res, next) => {
 app.use("/auth", authRoute);
 app.use("/products", productRoute);
 app.use("/payment", paymentRoutes);
+app.use("/user", userRoutes);
+app.use("/orders", orderRoute);
 app.listen(port, () => {
   console.log(`App is listening at the port ${port}`);
 });

@@ -1,7 +1,11 @@
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const PaymentModel = require("../Models/Payment");
-const order = async (req, res) => {
+const OrderModel = require("../Models/Order");
+const OrderController = require("./OrderController");
+const UserController = require("./UserController");
+
+const PaymentOrder = async (req, res) => {
   const { amount } = req.body;
   try {
     const instance = new Razorpay({
@@ -10,7 +14,7 @@ const order = async (req, res) => {
     });
 
     const options = {
-      amount: amount,
+      amount: amount * 100,
       currency: "INR",
       receipt: "receipt_order_74394",
     };
@@ -32,8 +36,11 @@ const PaymentSuccessHandler = async (req, res) => {
       razorpayPaymentId,
       razorpayOrderId,
       razorpaySignature,
+      email,
+      ordered_by,
+      amount,
+      itemsPurchased,
     } = req.body;
-    console.log("payment: " + req.body);
     const shasum = crypto.createHmac("sha256", process.env.RAZORPAY_SECRET);
     shasum.update(`${orderCreationId}|${razorpayPaymentId}`);
     const digest = shasum.digest("hex");
@@ -42,6 +49,9 @@ const PaymentSuccessHandler = async (req, res) => {
       return res.status(400).json({ msg: "Transaction not legit!" });
 
     const newPayment = PaymentModel({
+      email: email,
+      amount: amount / 100,
+      paymentBy: ordered_by,
       razorpayDetails: {
         orderId: razorpayOrderId,
         paymentId: razorpayPaymentId,
@@ -49,13 +59,25 @@ const PaymentSuccessHandler = async (req, res) => {
       },
       success: true,
     });
-
     await newPayment.save();
-
+    const createdOrder = await OrderController.createOrder(
+      razorpayPaymentId,
+      razorpayOrderId,
+      razorpaySignature,
+      email,
+      ordered_by,
+      amount,
+      itemsPurchased
+    );
+    const savedUserOrder = await UserController.saveUserOrder(
+      email,
+      createdOrder
+    );
     res.json({
       msg: "success",
       orderId: razorpayOrderId,
       paymentId: razorpayPaymentId,
+      order: createdOrder,
     });
   } catch (error) {
     console.log(error);
@@ -63,6 +85,6 @@ const PaymentSuccessHandler = async (req, res) => {
   }
 };
 module.exports = {
-  order,
+  PaymentOrder,
   PaymentSuccessHandler,
 };
