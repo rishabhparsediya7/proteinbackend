@@ -8,8 +8,8 @@ const sendMail = async (email) => {
     host: "smtp.ethereal.email",
     port: 587,
     auth: {
-      user: "orval52@ethereal.email",
-      pass: "w126aq9nhyMt2Zqkbc",
+      user: process.env.MAIL_USERNAME,
+      pass: process.env.MAIL_PASSWORD,
     },
   });
   transporter.verify(function (error, success) {
