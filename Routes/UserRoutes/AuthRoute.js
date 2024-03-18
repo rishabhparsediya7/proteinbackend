@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const authController = require("../Controller/AuthController");
+const authController = require("../../Controller/AuthController");
 
 router.post("/phone", authController.getMobileOTP);
 router.post("/mail-otp", authController.getMailOTP);

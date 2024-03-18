@@ -13,9 +13,17 @@ const OtpSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  company: {
+    type: String,
+    required: true,
+  },
   price_INR: {
     type: Number,
     required: true,
+  },
+  image: {
+    data: Buffer,
+    contentType: String,
   },
   createdAt: {
     type: Date,

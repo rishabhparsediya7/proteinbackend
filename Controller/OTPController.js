@@ -1,49 +1,18 @@
-const Otp = require("../Models/otp");
-const nodemailer = require("nodemailer");
+const mailer = require("../middleware/sendMail");
 
 const sendMail = async (email) => {
-  const otp = Math.floor(Math.random() * 10000);
-  console.log(otp);
-  const transporter = await nodemailer.createTransport({
-    host: "smtp.ethereal.email",
-    port: 587,
-    auth: {
-      user: process.env.MAIL_USERNAME,
-      pass: process.env.MAIL_PASSWORD,
-    },
-  });
-  transporter.verify(function (error, success) {
-    if (error) {
-      console.log(error);
-    } else {
-      console.log("Server is ready to take our messages");
-    }
-  });
-  const mailOptions = {
-    from: "orval52@ethereal.email",
-    to: email,
-    subject: "OTP Verification for Shop",
-    text: `Your OTP is: ${otp}`,
-  };
-  const info = await transporter.sendMail(mailOptions);
-  if (!info) {
+  const response = await mailer.sendMail(email);
+  if (!response.sent) {
     return { message: "failure", sent: false };
   }
   return {
     email: email,
-    response: info,
     message: "Sent Successfully",
     sent: true,
-    otp: otp,
+    otp: response.otp,
   };
 };
 
-const getOTP = async (email) => {
-  const response = await sendMail(email);
-  console.log(response);
-  return response;
-};
-
 module.exports = {
-  getOTP,
+  sendMail,
 };

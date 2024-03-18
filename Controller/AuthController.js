@@ -120,7 +120,7 @@ const getMailOTP = async (req, res) => {
 
   try {
     const existingUser = await OtpModel.findOne({ email: email });
-    const response = await Otp.getOTP(email);
+    const response = await Otp.sendMail(email);
     if (!existingUser) {
       console.log(response);
       if (response.sent) {

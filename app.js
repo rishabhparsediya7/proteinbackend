@@ -5,11 +5,13 @@ const cors = require("cors");
 const port = process.env.PORT || 8000;
 const bodyParser = require("body-parser");
 const upload = multer({ storage: multer.memoryStorage() });
-const authRoute = require("./Routes/AuthRoute");
-const userRoutes = require("./Routes/UserRoute");
-const orderRoute = require("./Routes/OrderRoute");
-const productRoute = require("./Routes/ProductRoutes");
-const paymentRoutes = require("./Routes/PaymentRoute");
+const authRoute = require("./Routes/UserRoutes/AuthRoute");
+const userRoutes = require("./Routes/UserRoutes/UserRoute");
+const orderRoute = require("./Routes/UserRoutes/OrderRoute");
+const productRoute = require("./Routes/UserRoutes/ProductRoutes");
+const paymentRoutes = require("./Routes/UserRoutes/PaymentRoute");
+
+const adminProduct = require("./Routes/AdminRoutes/AdminProductRoute");
 require("dotenv").config();
 require("./database/setup");
 
@@ -32,11 +34,14 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/auth", authRoute);
-app.use("/products", productRoute);
-app.use("/payment", paymentRoutes);
-app.use("/user", userRoutes);
-app.use("/orders", orderRoute);
+app.use("/user/v1/auth", authRoute);
+app.use("/user/v1/products", productRoute);
+app.use("/user/v1/payment", paymentRoutes);
+app.use("/user/v1/user", userRoutes);
+app.use("/user/v1/orders", orderRoute);
+
+app.use("/admin/v1/products", adminProduct);
+
 app.listen(port, () => {
   console.log(`App is listening at the port ${port}`);
 });
